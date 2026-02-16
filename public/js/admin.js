@@ -1,5 +1,8 @@
-const API_URL = '/api';
+// ========== CONFIGURACIÓN ==========
+const API_URL = '/.netlify/functions';
 let token = localStorage.getItem('adminToken');
+let products = [];
+let orders = [];
 
 // ========== LOGIN ==========
 async function login() {
@@ -20,13 +23,21 @@ async function login() {
             localStorage.setItem('adminToken', token);
             document.getElementById('loginContainer').style.display = 'none';
             document.getElementById('adminPanel').style.display = 'block';
+            document.getElementById('userName').textContent = data.name || 'Admin';
             loadDashboard();
+            showToast('Bienvenido Admin');
         } else {
             showToast('Credenciales incorrectas', 'error');
         }
     } catch (error) {
-        showToast('Error de conexión', 'error');
+        showToast('Error de conexión: ' + error.message, 'error');
     }
+}
+
+function logout() {
+    localStorage.removeItem('adminToken');
+    document.getElementById('loginContainer').style.display = 'flex';
+    document.getElementById('adminPanel').style.display = 'none';
 }
 
 // ========== DASHBOARD ==========
@@ -40,9 +51,11 @@ async function loadDashboard() {
 async function loadProducts() {
     try {
         const response = await fetch(`${API_URL}/products`);
-        const products = await response.json();
+        products = await response.json();
         
         const tbody = document.getElementById('productsBody');
+        if (!tbody) return;
+        
         tbody.innerHTML = products.map(p => `
             <tr>
                 <td>#${p.id}</td>
@@ -59,7 +72,7 @@ async function loadProducts() {
             </tr>
         `).join('');
     } catch (error) {
-        showToast('Error cargando productos', 'error');
+        showToast('Error cargando productos: ' + error.message, 'error');
     }
 }
 
@@ -69,13 +82,13 @@ async function saveProduct(event) {
     const product = {
         id: document.getElementById('productId').value || null,
         name: document.getElementById('productName').value,
-        price: document.getElementById('productPrice').value,
-        stock: document.getElementById('productStock').value,
+        price: parseFloat(document.getElementById('productPrice').value),
+        stock: parseInt(document.getElementById('productStock').value),
         category: document.getElementById('productCategory').value,
-        image: document.getElementById('productImage').value,
-        description: document.getElementById('productDescription').value,
+        image: document.getElementById('productImage').value || 'https://via.placeholder.com/300x400',
+        description: document.getElementById('productDescription').value || '',
         commission_type: document.getElementById('commissionType').value,
-        commission_value: document.getElementById('commissionValue').value
+        commission_value: parseFloat(document.getElementById('commissionValue').value)
     };
     
     try {
@@ -90,9 +103,11 @@ async function saveProduct(event) {
             showToast('Producto guardado');
             clearForm();
             loadProducts();
+        } else {
+            showToast('Error al guardar', 'error');
         }
     } catch (error) {
-        showToast('Error guardando', 'error');
+        showToast('Error guardando: ' + error.message, 'error');
     }
 }
 
@@ -113,7 +128,7 @@ async function editProduct(id) {
         
         window.scrollTo({top: 0, behavior: 'smooth'});
     } catch (error) {
-        showToast('Error cargando', 'error');
+        showToast('Error cargando producto: ' + error.message, 'error');
     }
 }
 
@@ -131,7 +146,7 @@ async function deleteProduct(id) {
             loadProducts();
         }
     } catch (error) {
-        showToast('Error eliminando', 'error');
+        showToast('Error eliminando: ' + error.message, 'error');
     }
 }
 
@@ -139,9 +154,11 @@ async function deleteProduct(id) {
 async function loadOrders() {
     try {
         const response = await fetch(`${API_URL}/orders`);
-        const orders = await response.json();
+        orders = await response.json();
         
         const tbody = document.getElementById('ordersBody');
+        if (!tbody) return;
+        
         tbody.innerHTML = orders.map(o => `
             <tr>
                 <td>#${o.id}</td>
@@ -160,7 +177,7 @@ async function loadOrders() {
             </tr>
         `).join('');
     } catch (error) {
-        showToast('Error cargando pedidos', 'error');
+        showToast('Error cargando pedidos: ' + error.message, 'error');
     }
 }
 
@@ -178,7 +195,7 @@ async function updateOrderStatus(id, status) {
             loadOrders();
         }
     } catch (error) {
-        showToast('Error actualizando', 'error');
+        showToast('Error actualizando: ' + error.message, 'error');
     }
 }
 
@@ -188,12 +205,12 @@ async function loadStats() {
         const response = await fetch(`${API_URL}/stats`);
         const stats = await response.json();
         
-        document.getElementById('statProducts').textContent = stats.products;
-        document.getElementById('statOrders').textContent = stats.orders;
-        document.getElementById('statUsers').textContent = stats.users;
-        document.getElementById('statLowStock').textContent = stats.low_stock;
+        document.getElementById('statProducts').textContent = stats.products || 0;
+        document.getElementById('statOrders').textContent = stats.orders || 0;
+        document.getElementById('statUsers').textContent = stats.users || 0;
+        document.getElementById('statLowStock').textContent = stats.low_stock || 0;
     } catch (error) {
-        showToast('Error cargando stats', 'error');
+        showToast('Error cargando stats: ' + error.message, 'error');
     }
 }
 
@@ -203,18 +220,17 @@ function clearForm() {
     document.getElementById('productForm').reset();
 }
 
-function logout() {
-    localStorage.removeItem('adminToken');
-    document.getElementById('loginContainer').style.display = 'flex';
-    document.getElementById('adminPanel').style.display = 'none';
-}
-
 function showToast(message, type = 'success') {
     const toast = document.getElementById('toast');
+    if (!toast) return;
+    
     toast.textContent = message;
     toast.style.background = type === 'success' ? 'var(--neon-pink)' : 'var(--neon-purple)';
     toast.classList.add('show');
-    setTimeout(() => toast.classList.remove('show'), 3000);
+    
+    setTimeout(() => {
+        toast.classList.remove('show');
+    }, 3000);
 }
 
 // ========== INICIALIZACIÓN ==========
