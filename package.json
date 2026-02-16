@@ -1,0 +1,8 @@
+{
+  "name": "sexyxhop",
+  "version": "1.0.0",
+  "description": "Tienda erótica neón",
+  "dependencies": {
+    "@neondatabase/serverless": "^0.9.0"
+  }
+}
