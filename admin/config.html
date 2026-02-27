@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Luxuria Admin - Configuración</title>
+    <link rel="stylesheet" href="admin.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <header class="admin-header">
+        <div class="admin-header-content">
+            <div class="admin-logo">
+                <h2>LUXURIA<span>.</span> ADMIN</h2>
+            </div>
+            <div class="admin-user">
+                <div class="admin-user-info">
+                    <span class="nombre" id="adminNombre">Administrador</span>
+                    <span class="rol" id="adminRol">superadmin</span>
+                </div>
+                <button class="btn-logout" onclick="logout()">
+                    <i class="fas fa-sign-out-alt"></i> SALIR
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <nav class="admin-nav">
+        <ul>
+            <li><a href="index.html"><i class="fas fa-home"></i> DASHBOARD</a></li>
+            <li><a href="ventas.html"><i class="fas fa-shopping-cart"></i> VENTAS</a></li>
+            <li><a href="inventario.html"><i class="fas fa-box"></i> INVENTARIO</a></li>
+            <li><a href="productos-edit.html"><i class="fas fa-edit"></i> PRODUCTOS</a></li>
+            <li><a href="admins.html"><i class="fas fa-users-cog"></i> ADMINS</a></li>
+            <li><a href="config.html" class="active"><i class="fas fa-cog"></i> CONFIG</a></li>
+        </ul>
+    </nav>
+
+    <main class="admin-main">
+        <div style="display: grid; gap: 2rem;">
+            <!-- CONFIGURACIÓN WHATSAPP -->
+            <div class="table-container">
+                <h3 style="margin-bottom: 1.5rem;">
+                    <i class="fab fa-whatsapp" style="color: #25D366; margin-right: 0.5rem;"></i>
+                    CONFIGURACIÓN WHATSAPP
+                </h3>
+                
+                <div style="max-width: 500px;">
+                    <div class="form-group">
+                        <label for="whatsappNumber">Número de WhatsApp (receptor de pedidos)</label>
+                        <input type="text" id="whatsappNumber" placeholder="Ej: 1234567890" style="width: 100%; padding: 0.8rem; background: var(--negro); border: 1px solid var(--gris); border-radius: 8px; color: var(--marfil);">
+                        <small style="color: #888; display: block; margin-top: 0.3rem;">Formato: solo números, sin + ni espacios</small>
+                    </div>
+                    
+                    <button class="btn-login" onclick="guardarWhatsApp()" style="margin-top: 1rem;">
+                        <i class="fas fa-save"></i> GUARDAR NÚMERO
+                    </button>
+                    
+                    <div id="whatsappSuccess" style="color: var(--exito); margin-top: 1rem; display: none;">
+                        <i class="fas fa-check-circle"></i> Número guardado correctamente
+                    </div>
+                </div>
+            </div>
+
+            <!-- CONFIGURACIÓN LÍMITES DE STOCK -->
+            <div class="table-container">
+                <h3 style="margin-bottom: 1.5rem;">
+                    <i class="fas fa-exclamation-triangle" style="color: var(--dorado); margin-right: 0.5rem;"></i>
+                    LÍMITES DE STOCK BAJO POR PRODUCTO
+                </h3>
+                
+                <table id="tablaLimites">
+                    <thead>
+                        <tr>
+                            <th>PRODUCTO</th>
+                            <th>STOCK ACTUAL</th>
+                            <th>LÍMITE ALERTA</th>
+                            <th>ACCIÓN</th>
+                        </tr>
+                    </thead>
+                    <tbody id="limitesBody">
+                        <!-- Se carga dinámicamente -->
+                    </tbody>
+                </table>
+                
+                <button class="btn-login" onclick="guardarTodosLimites()" style="margin-top: 2rem;">
+                    <i class="fas fa-save"></i> GUARDAR TODOS LOS LÍMITES
+                </button>
+                
+                <div id="limitesSuccess" style="color: var(--exito); margin-top: 1rem; display: none;">
+                    <i class="fas fa-check-circle"></i> Límites guardados correctamente
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // Cargar configuración al iniciar
+        document.addEventListener('DOMContentLoaded', () => {
+            cargarConfigWhatsApp();
+            cargarLimitesStock();
+        });
+
+        // ===== FUNCIONES WHATSAPP =====
+        function cargarConfigWhatsApp() {
+            const whatsappConfig = localStorage.getItem('luxuriaWhatsApp');
+            if (whatsappConfig) {
+                document.getElementById('whatsappNumber').value = whatsappConfig;
+            } else {
+                document.getElementById('whatsappNumber').value = '1234567890'; // Valor por defecto
+            }
+        }
+
+        function guardarWhatsApp() {
+            const numero = document.getElementById('whatsappNumber').value.trim();
+            
+            if (!numero || isNaN(numero)) {
+                alert('Por favor ingresa un número válido (solo dígitos)');
+                return;
+            }
+            
+            localStorage.setItem('luxuriaWhatsApp', numero);
+            
+            // Mostrar mensaje de éxito
+            const successMsg = document.getElementById('whatsappSuccess');
+            successMsg.style.display = 'block';
+            setTimeout(() => {
+                successMsg.style.display = 'none';
+            }, 3000);
+            
+            // Actualizar también en script.js para la tienda (simulado)
+            console.log('WhatsApp configurado:', numero);
+        }
+
+        // ===== FUNCIONES LÍMITES DE STOCK =====
+        function cargarLimitesStock() {
+            // Cargar productos
+            const productos = obtenerProductos();
+            // Cargar límites guardados
+            const limitesGuardados = JSON.parse(localStorage.getItem('luxuriaLimitesStock')) || {};
+            
+            const tbody = document.getElementById('limitesBody');
+            tbody.innerHTML = '';
+            
+            productos.forEach(producto => {
+                const limiteActual = limitesGuardados[producto.id] || 5; // 5 por defecto
+                const stockClass = producto.stock < limiteActual ? 'stock-bajo' : '';
+                
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${producto.nombre}</td>
+                    <td class="${stockClass}"><strong>${producto.stock}</strong></td>
+                    <td>
+                        <input type="number" 
+                               id="limite_${producto.id}" 
+                               value="${limiteActual}" 
+                               min="1" 
+                               max="100"
+                               style="width: 80px; padding: 0.4rem; background: var(--negro); border: 1px solid var(--gris); border-radius: 4px; color: var(--marfil);">
+                    </td>
+                    <td>
+                        <button class="btn-accion" onclick="guardarLimite(${producto.id})">
+                            <i class="fas fa-save"></i>
+                        </button>
+                    </td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+
+        function guardarLimite(productoId) {
+            const input = document.getElementById(`limite_${productoId}`);
+            const nuevoLimite = parseInt(input.value);
+            
+            if (isNaN(nuevoLimite) || nuevoLimite < 1) {
+                alert('El límite debe ser un número mayor a 0');
+                return;
+            }
+            
+            // Cargar límites actuales
+            const limites = JSON.parse(localStorage.getItem('luxuriaLimitesStock')) || {};
+            
+            // Actualizar límite
+            limites[productoId] = nuevoLimite;
+            
+            // Guardar
+            localStorage.setItem('luxuriaLimitesStock', JSON.stringify(limites));
+            
+            // Feedback visual
+            input.style.borderColor = 'var(--exito)';
+            setTimeout(() => input.style.borderColor = 'var(--gris)', 1000);
+            
+            // Recargar para actualizar colores de stock
+            cargarLimitesStock();
+        }
+
+        function guardarTodosLimites() {
+            const limites = {};
+            const inputs = document.querySelectorAll('input[id^="limite_"]');
+            
+            inputs.forEach(input => {
+                const id = input.id.replace('limite_', '');
+                const valor = parseInt(input.value);
+                
+                if (!isNaN(valor) && valor >= 1) {
+                    limites[id] = valor;
+                }
+            });
+            
+            localStorage.setItem('luxuriaLimitesStock', JSON.stringify(limites));
+            
+            // Mostrar mensaje de éxito
+            const successMsg = document.getElementById('limitesSuccess');
+            successMsg.style.display = 'block';
+            setTimeout(() => {
+                successMsg.style.display = 'none';
+            }, 3000);
+            
+            // Recargar tabla
+            cargarLimitesStock();
+        }
+
+        // Función auxiliar para obtener productos (debe estar disponible)
+        function obtenerProductos() {
+            // Si no hay acceso a productos.js, usamos datos de ejemplo
+            if (typeof window.productos !== 'undefined') {
+                return window.productos;
+            }
+            
+            // Datos de ejemplo por si acaso
+            return [
+                { id: 1, nombre: "CAMISA DE SEDA NEGRA", stock: 15 },
+                { id: 2, nombre: "PANTALÓN DE VESTIR BORGOÑA", stock: 8 },
+                { id: 3, nombre: "CINTURÓN DORADO", stock: 2 },
+                { id: 4, nombre: "LENCERÍA ENCAJE", stock: 5 },
+                { id: 5, nombre: "ACEITE CORPORAL DORADO", stock: 12 },
+                { id: 6, nombre: "GAFAS DE SOL ELEGANTES", stock: 0 },
+                { id: 7, nombre: "SET DE VELAS AROMÁTICAS", stock: 3 },
+                { id: 8, nombre: "ESPEJO CON LUCES", stock: 4 }
+            ];
+        }
+    </script>
+    <script src="admin.js"></script>
+</body>
+</html>

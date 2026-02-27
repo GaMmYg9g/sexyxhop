@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Luxuria Admin - Login</title>
+    <link rel="stylesheet" href="admin.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body class="login-body">
+    <div class="login-container">
+        <div class="login-box">
+            <div class="login-logo">
+                <h1>LUXURIA<span class="dorado">.</span></h1>
+                <p>ADMIN PANEL</p>
+            </div>
+            
+            <form id="loginForm" class="login-form">
+                <div class="form-group">
+                    <label for="usuario">
+                        <i class="fas fa-user"></i> USUARIO
+                    </label>
+                    <input type="text" id="usuario" required placeholder="Ingresa tu usuario">
+                </div>
+                
+                <div class="form-group">
+                    <label for="password">
+                        <i class="fas fa-lock"></i> CONTRASEÑA
+                    </label>
+                    <input type="password" id="password" required placeholder="••••••••">
+                </div>
+                
+                <button type="submit" class="btn-login">
+                    ACCEDER <i class="fas fa-arrow-right"></i>
+                </button>
+            </form>
+            
+            <div id="errorLogin" class="error-message" style="display: none;">
+                Usuario o contraseña incorrectos
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Credenciales de ejemplo (en producción, esto estaría en admins.json)
+        const ADMINS = [
+            { usuario: "superadmin", password: "Luxuria2024", rol: "superadmin", nombre: "Administrador" },
+            { usuario: "admin", password: "Admin2024", rol: "admin", nombre: "Gerente" }
+        ];
+
+        document.getElementById('loginForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            
+            const usuario = document.getElementById('usuario').value;
+            const password = document.getElementById('password').value;
+            
+            const admin = ADMINS.find(a => a.usuario === usuario && a.password === password);
+            
+            if (admin) {
+                // Guardar sesión
+                localStorage.setItem('luxuriaAdmin', JSON.stringify({
+                    usuario: admin.usuario,
+                    nombre: admin.nombre,
+                    rol: admin.rol,
+                    loginTime: new Date().toISOString()
+                }));
+                
+                // Redirigir al panel
+                window.location.href = 'index.html';
+            } else {
+                document.getElementById('errorLogin').style.display = 'block';
+            }
+        });
+    </script>
+</body>
+</html>

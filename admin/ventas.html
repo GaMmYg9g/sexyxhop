@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Luxuria Admin - Ventas</title>
+    <link rel="stylesheet" href="admin.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <header class="admin-header">
+        <div class="admin-header-content">
+            <div class="admin-logo">
+                <h2>LUXURIA<span>.</span> ADMIN</h2>
+            </div>
+            <div class="admin-user">
+                <div class="admin-user-info">
+                    <span class="nombre" id="adminNombre">Administrador</span>
+                    <span class="rol" id="adminRol">superadmin</span>
+                </div>
+                <button class="btn-logout" onclick="logout()">
+                    <i class="fas fa-sign-out-alt"></i> SALIR
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <nav class="admin-nav">
+        <ul>
+            <li><a href="index.html"><i class="fas fa-home"></i> DASHBOARD</a></li>
+            <li><a href="ventas.html" class="active"><i class="fas fa-shopping-cart"></i> VENTAS</a></li>
+            <li><a href="inventario.html"><i class="fas fa-box"></i> INVENTARIO</a></li>
+            <li><a href="productos-edit.html" class="solo-superadmin"><i class="fas fa-edit"></i> PRODUCTOS</a></li>
+            <li><a href="admins.html" class="solo-superadmin"><i class="fas fa-users-cog"></i> ADMINS</a></li>
+            <li><a href="config.html" class="solo-superadmin"><i class="fas fa-cog"></i> CONFIG</a></li>
+        </ul>
+    </nav>
+
+    <main class="admin-main">
+        <div class="table-container">
+            <h3 style="margin-bottom: 1.5rem;">HISTORIAL DE VENTAS</h3>
+            <table id="tablaVentas">
+                <thead>
+                    <tr>
+                        <th>PEDIDO</th>
+                        <th>CLIENTE</th>
+                        <th>FECHA</th>
+                        <th>TOTAL</th>
+                        <th>ESTADO</th>
+                        <th>ACCIONES</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Se carga dinámicamente -->
+                </tbody>
+            </table>
+        </div>
+    </main>
+
+    <script src="admin.js"></script>
+</body>
+</html>
