@@ -93,7 +93,18 @@ const productos = [
         stock: 4,
         agotado: false,
         destacado: false
-    }
+    },
+    {
+        id: 9,
+        nombre: "Gammy",
+        descripcion: "Elegancia y confort. Talle alto, tejido premium.",
+        precio: 129.99,
+        imagen: "imagen/p.jpg",
+        categoria: "ropa",
+        stock: 8,
+        agotado: false,
+        destacado: true
+    },
 ];
 
 // No modificar - Imagen por defecto
