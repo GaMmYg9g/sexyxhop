@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Luxuria Shop - Elegancia y Deseo</title>
+    
+    <!-- PWA meta tags -->
+    <meta name="theme-color" content="#0E0E0E">
+    <link rel="manifest" href="manifest.json">
+    <link rel="apple-touch-icon" href="img/icon-192.png">
+    <meta name="description" content="Tienda exclusiva para adultos. Productos de lujo con la máxima discreción.">
+    
+    <!-- CSS -->
+    <link rel="stylesheet" href="style.css">
+    
+    <!-- Font Awesome para iconos -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <!-- HEADER ELEGANTE -->
+    <header>
+        <div class="header-container">
+            <div class="logo-wrapper">
+                <h1 class="logo">LUXURIA<span class="logo-dorado">.</span></h1>
+                <span class="tagline">ELEGANCE REDEFINED</span>
+            </div>
+            <nav>
+                <button class="carrito-btn" id="verCarrito" aria-label="Ver carrito">
+                    <i class="fas fa-shopping-bag"></i>
+                    <span id="contadorCarrito" class="contador">0</span>
+                </button>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <!-- BUSCADOR Y CATEGORÍAS -->
+        <div class="search-section">
+            <div class="search-wrapper">
+                <i class="fas fa-search search-icon"></i>
+                <input type="text" id="buscador" class="search-input" placeholder="Buscar productos...">
+            </div>
+            
+            <div class="categorias" id="categorias">
+                <button class="categoria active" data-categoria="todos">TODOS</button>
+                <button class="categoria" data-categoria="ropa">ROPA</button>
+                <button class="categoria" data-categoria="accesorios">ACCESORIOS</button>
+                <button class="categoria" data-categoria="intimo">ÍNTIMO</button>
+                <button class="categoria" data-categoria="ofertas">OFERTAS</button>
+            </div>
+        </div>
+
+        <!-- GRID DE PRODUCTOS -->
+        <section class="productos-section">
+            <div class="productos-grid" id="productosContainer">
+                <!-- Los productos se cargan aquí dinámicamente -->
+            </div>
+        </section>
+    </main>
+
+    <!-- MODAL CARRITO -->
+    <div id="carritoModal" class="modal">
+        <div class="modal-contenido">
+            <div class="modal-header">
+                <h2><i class="fas fa-shopping-bag"></i> TU CARRITO</h2>
+                <button class="cerrar-modal" id="cerrarModal">&times;</button>
+            </div>
+            <div class="modal-body" id="carritoItems">
+                <!-- Items del carrito -->
+            </div>
+            <div class="modal-footer">
+                <div class="resumen-carrito">
+                    <div class="subtotal">
+                        <span>SUBTOTAL</span>
+                        <span id="subtotalCarrito">$0</span>
+                    </div>
+                    <div class="envio">
+                        <span>ENVÍO</span>
+                        <span class="gratis">GRATIS</span>
+                    </div>
+                    <div class="total-carrito">
+                        <span>TOTAL</span>
+                        <span id="totalCarrito">$0</span>
+                    </div>
+                </div>
+                <button class="btn-pedido" id="realizarPedido">
+                    REALIZAR PEDIDO <i class="fas fa-arrow-right"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL REGISTRO -->
+    <div id="registroModal" class="modal">
+        <div class="modal-contenido modal-small">
+            <div class="modal-header">
+                <h2><i class="fas fa-user"></i> COMPLETA TUS DATOS</h2>
+                <button class="cerrar-modal" id="cerrarRegistroModal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p class="modal-descripcion">Necesitamos estos datos para procesar tu pedido.</p>
+                <form id="formularioRegistro">
+                    <div class="form-group">
+                        <label for="regNombre">Nombre completo</label>
+                        <input type="text" id="regNombre" required placeholder="Ej: Ana García">
+                    </div>
+                    <div class="form-group">
+                        <label for="regTelefono">Teléfono</label>
+                        <input type="tel" id="regTelefono" required placeholder="Ej: 612345678">
+                    </div>
+                    <button type="submit" class="btn-confirmar">
+                        GUARDAR Y CONTINUAR <i class="fas fa-check"></i>
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL CONFIRMACIÓN -->
+    <div id="confirmacionModal" class="modal">
+        <div class="modal-contenido modal-small modal-exito">
+            <div class="modal-header exito-header">
+                <div class="exito-icono">
+                    <i class="fas fa-check-circle"></i>
+                </div>
+                <h2>¡PEDIDO CONFIRMADO!</h2>
+            </div>
+            <div class="modal-body">
+                <div class="numero-pedido" id="numeroPedido">#LUX-000000</div>
+                <p class="mensaje-confirmacion">
+                    Hemos recibido tu solicitud. Te contactaremos por WhatsApp en menos de 15 minutos.
+                </p>
+                <div class="total-confirmacion" id="totalConfirmacion">Total: $0</div>
+                <button class="btn-seguir" id="seguirComprando">
+                    SEGUIR COMPRANDO <i class="fas fa-arrow-right"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- FOOTER -->
+    <footer>
+        <div class="footer-content">
+            <p>© 2026 LUXURIA SHOP. Todos los derechos reservados.</p>
+            <p class="discreto">Discreción y elegancia desde 2026</p>
+        </div>
+    </footer>
+
+    <!-- SCRIPTS -->
+    <script src="productos.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
