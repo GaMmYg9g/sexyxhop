@@ -1,0 +1,22 @@
+{
+  "admins": [
+    {
+      "id": 1,
+      "usuario": "superadmin",
+      "password": "Luxuria2024",
+      "nombre": "Administrador Principal",
+      "rol": "superadmin",
+      "email": "admin@luxuria.com",
+      "ultimoAcceso": "2026-02-26T09:00:00.000Z"
+    },
+    {
+      "id": 2,
+      "usuario": "gerente",
+      "password": "Gerente2024",
+      "nombre": "Carlos Gerente",
+      "rol": "admin",
+      "email": "carlos@luxuria.com",
+      "ultimoAcceso": "2026-02-25T14:30:00.000Z"
+    }
+  ]
+}
