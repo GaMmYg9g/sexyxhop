@@ -1,81 +1,39 @@
 // ============================================
 // LUXURIA SHOP - CATÁLOGO DE PRODUCTOS
 // ============================================
-// Edita este archivo para añadir/modificar productos
-// disponible: true = disponible, false = agotado
 
 const productos = [
     {
         id: 1,
-        nombre: "CAMISA DE SEDA NEGRA",
-        descripcion: "Seductora camisa de seda negra. Corte italiano, tacto suave.",
-        precio: 89.99,
-        imagen: "imagen/camisa-seda.jpg",
-        categoria: "ropa",
-        disponible: true  // ✅ VERDE - DISPONIBLE
+        nombre: "ARNÉS STRAP-ON DOBLE",
+        descripcion: "Arnes ajustable con doble dildo para juego en pareja",
+        precio: 45,
+        imagen: "imagen/arnes.jpg",
+        categoria: "arneses",
+        disponible: true,
+        especificaciones: [
+            { label: "Largo", valor: "17.5 y 12.5 cm" },
+            { label: "Diámetro", valor: "2.2 y 3.5 cm" },
+            { label: "Material", valor: "Silicona" },
+            { label: "Incluye", valor: "Dildos intercambiables" }
+        ]
     },
     {
         id: 2,
-        nombre: "PANTALÓN DE VESTIR BORGOÑA",
-        descripcion: "Elegancia y confort. Talle alto, tejido premium.",
-        precio: 129.99,
-        imagen: "imagen/pantalon.jpg",
-        categoria: "ropa",
-        disponible: true  // ✅ VERDE - DISPONIBLE
-    },
-    {
-        id: 3,
-        nombre: "CINTURÓN DORADO",
-        descripcion: "Hebilla dorada apagada. Cuero genuino italiano.",
-        precio: 45.50,
-        imagen: "imagen/cinturon.jpg",
-        categoria: "accesorios",
-        disponible: true  // ✅ VERDE - DISPONIBLE
-    },
-    {
-        id: 4,
-        nombre: "LENCERÍA ENCAJE",
-        descripcion: "Conjunto de encaje francés. Máxima comodidad y estilo.",
-        precio: 79.99,
-        imagen: "imagen/lenceria.jpg",
-        categoria: "intimo",
-        disponible: true  // ✅ VERDE - DISPONIBLE
-    },
-    {
-        id: 5,
-        nombre: "ACEITE CORPORAL DORADO",
-        descripcion: "Aceite con partículas doradas. Hidratación y brillo.",
-        precio: 34.99,
-        imagen: "imagen/aceite.jpg",
-        categoria: "intimo",
-        disponible: true  // ✅ VERDE - DISPONIBLE
-    },
-    {
-        id: 6,
-        nombre: "GAFAS DE SOL ELEGANTES",
-        descripcion: "Diseño italiano. Protección UV y estilo único.",
-        precio: 149.99,
-        imagen: "imagen/gafas.jpg",
-        categoria: "accesorios",
-        disponible: false  // ❌ ROJO - AGOTADO
-    },
-    {
-        id: 7,
-        nombre: "SET DE VELAS AROMÁTICAS",
-        descripcion: "Tres velas. Notas: vainilla, canela, ámbar.",
-        precio: 59.99,
-        imagen: "imagen/velas.jpg",
-        categoria: "ofertas",
-        disponible: true  // ✅ VERDE - DISPONIBLE
-    },
-    {
-        id: 8,
-        nombre: "ESPEJO CON LUCES",
-        descripcion: "Espejo de maquillaje con luces LED regulables.",
-        precio: 89.99,
-        imagen: "imagen/espejo.jpg",
-        categoria: "ofertas",
-        disponible: true  // ✅ VERDE - DISPONIBLE
+        nombre: "VIBRADOR SUCCIONADOR",
+        descripcion: "Estimulador de clítoris y punto G con control por APP",
+        precio: 45,
+        imagen: "imagen/vibrador.jpg",
+        categoria: "vibradores",
+        disponible: true,
+        especificaciones: [
+            { label: "Largo", valor: "11 cm" },
+            { label: "Diámetro", valor: "3.4 cm" },
+            { label: "Material", valor: "Silicona ABS" },
+            { label: "Batería", valor: "Carga USB Magnética" },
+            { label: "Vibración", valor: "9 modos de vibración" },
+            { label: "Succión", valor: "9 modos de succión" }
+        ]
     }
 ];
 
