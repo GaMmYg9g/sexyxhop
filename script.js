@@ -2,8 +2,7 @@
 // LUXURIA SHOP - LÓGICA PRINCIPAL
 // ============================================
 
-// Configuración - CAMBIA AQUÍ TU NÚMERO
-const WHATSAPP_NUMBER = "5356502201"; // ← TU NÚMERO AQUÍ
+const WHATSAPP_NUMBER = "5356502201";
 const TIENDA_NOMBRE = "LUXURIA SHOP";
 
 // Estado
@@ -29,7 +28,7 @@ const numeroPedido = document.getElementById('numeroPedido');
 const totalConfirmacion = document.getElementById('totalConfirmacion');
 const seguirComprando = document.getElementById('seguirComprando');
 const buscador = document.getElementById('buscador');
-const categoriasBtns = document.querySelectorAll('.categoria');
+const categoriasContainer = document.getElementById('categorias');
 
 // Filtros
 let filtroCategoria = 'todos';
@@ -37,10 +36,10 @@ let filtroBusqueda = '';
 
 // ===== INICIALIZACIÓN =====
 document.addEventListener('DOMContentLoaded', () => {
+    cargarCategorias();
     cargarProductos();
     actualizarContadorCarrito();
     
-    // Event listeners
     verCarritoBtn.addEventListener('click', abrirCarrito);
     cerrarCarritoBtn.addEventListener('click', cerrarCarritoModal);
     realizarPedidoBtn.addEventListener('click', procesarPedido);
@@ -50,16 +49,6 @@ document.addEventListener('DOMContentLoaded', () => {
     seguirComprando.addEventListener('click', () => cerrarModal(confirmacionModal));
     buscador.addEventListener('input', filtrarProductos);
     
-    categoriasBtns.forEach(btn => {
-        btn.addEventListener('click', () => {
-            categoriasBtns.forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
-            filtroCategoria = btn.dataset.categoria;
-            filtrarProductos();
-        });
-    });
-    
-    // Cerrar modales al hacer clic fuera
     window.addEventListener('click', (e) => {
         if (e.target === carritoModal) cerrarCarritoModal();
         if (e.target === registroModal) cerrarModal(registroModal);
@@ -67,24 +56,46 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 });
 
+// ===== CATEGORÍAS DINÁMICAS (de todas las categorías de todos los productos) =====
+function cargarCategorias() {
+    // Extraer TODAS las categorías de todos los productos (array de arrays)
+    const todasCategorias = productosData.productos.flatMap(p => p.categorias);
+    const categoriasUnicas = [...new Set(todasCategorias)].sort();
+    
+    let html = '<button class="categoria active" data-categoria="todos">TODOS</button>';
+    categoriasUnicas.forEach(cat => {
+        html += `<button class="categoria" data-categoria="${cat}">${cat.toUpperCase()}</button>`;
+    });
+    
+    categoriasContainer.innerHTML = html;
+    
+    document.querySelectorAll('.categoria').forEach(btn => {
+        btn.addEventListener('click', () => {
+            document.querySelectorAll('.categoria').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            filtroCategoria = btn.dataset.categoria;
+            filtrarProductos();
+        });
+    });
+}
+
 // ===== FUNCIONES DE PRODUCTOS =====
 function cargarProductos() {
-    const filtrados = filtrarProductosArray();
-    renderizarProductos(filtrados);
+    renderizarProductos(filtrarProductosArray());
 }
 
 function filtrarProductosArray() {
-    let filtrados = productos;
+    let filtrados = productosData.productos;
     
     if (filtroBusqueda) {
         filtrados = filtrados.filter(p => 
-            p.nombre.toLowerCase().includes(filtroBusqueda.toLowerCase()) ||
-            p.descripcion.toLowerCase().includes(filtroBusqueda.toLowerCase())
+            p.nombre.toLowerCase().includes(filtroBusqueda.toLowerCase())
         );
     }
     
     if (filtroCategoria !== 'todos') {
-        filtrados = filtrados.filter(p => p.categoria === filtroCategoria);
+        // Filtra si el producto tiene la categoría seleccionada
+        filtrados = filtrados.filter(p => p.categorias.includes(filtroCategoria));
     }
     
     return filtrados;
@@ -93,6 +104,16 @@ function filtrarProductosArray() {
 function filtrarProductos() {
     filtroBusqueda = buscador.value;
     renderizarProductos(filtrarProductosArray());
+}
+
+// ===== DETECTAR SI ES NUEVO (menos de 24h) =====
+function esNuevo(fechaStr) {
+    if (!fechaStr) return false;
+    const fechaProducto = new Date(fechaStr);
+    const ahora = new Date();
+    const diffMs = ahora - fechaProducto;
+    const diffHoras = diffMs / (1000 * 60 * 60);
+    return diffHoras < 24;
 }
 
 function renderizarProductos(array) {
@@ -107,24 +128,49 @@ function renderizarProductos(array) {
         const disponible = p.disponible;
         const estadoClass = disponible ? 'estado-disponible' : 'estado-agotado';
         const estadoTexto = disponible ? 'DISPONIBLE' : 'AGOTADO';
+        const nuevo = esNuevo(p.fechaAgregado);
         
-        // Generar especificaciones estilo Telegram
-        const especsHTML = p.especificaciones.map(esp => `
+        // Generar detalles
+        const propiedadesFijas = ['nombre', 'precio', 'imagen', 'categorias', 'disponible', 'fechaAgregado', 'oferta'];
+        const detallesArray = [];
+        for (const [key, value] of Object.entries(p)) {
+            if (!propiedadesFijas.includes(key) && value) {
+                const label = key.charAt(0).toUpperCase() + key.slice(1).replace(/_/g, ' ');
+                detallesArray.push({ label, valor: value });
+            }
+        }
+        
+        const detallesHTML = detallesArray.map(d => `
             <div class="especificacion-item">
-                <span class="especificacion-label">${esp.label}</span>
-                <span class="especificacion-valor">${esp.valor}</span>
+                <span class="especificacion-label">${d.label}</span>
+                <span class="especificacion-valor">${d.valor}</span>
             </div>
         `).join('');
         
+        const nombreId = p.nombre.replace(/[^a-zA-Z0-9]/g, '_');
+        
         return `
-            <div class="producto-card">
-                <img src="${p.imagen}" alt="${p.nombre}" class="producto-imagen" onerror="this.src='${IMAGEN_DEFAULT}'">
+            <div class="producto-card" data-nombre="${p.nombre}">
+                <div class="producto-imagen-wrapper">
+                    <img src="${p.imagen}" alt="${p.nombre}" class="producto-imagen" onerror="this.src='${IMAGEN_DEFAULT}'">
+                    
+                    <!-- BADGES NOTIFICACIÓN (NEW / OFF) -->
+                    <div class="producto-badges">
+                        ${nuevo ? '<span class="badge badge-new">NEW</span>' : ''}
+                        ${p.oferta ? '<span class="badge badge-off">OFF</span>' : ''}
+                    </div>
+                </div>
+                
                 <div class="producto-info">
                     <h3 class="producto-nombre">${p.nombre}</h3>
-                    <p class="producto-descripcion">${p.descripcion}</p>
                     
-                    <div class="producto-especificaciones">
-                        ${especsHTML}
+                    <button class="btn-detalles" data-nombre="${p.nombre}">
+                        <span class="btn-detalles-texto">VER DETALLES</span>
+                        <i class="fas fa-chevron-down"></i>
+                    </button>
+                    
+                    <div class="producto-especificaciones oculto" id="detalles-${nombreId}">
+                        ${detallesHTML}
                     </div>
                     
                     <div class="producto-precio">
@@ -134,27 +180,47 @@ function renderizarProductos(array) {
                     <div class="producto-estado ${estadoClass}">${estadoTexto}</div>
                     
                     ${disponible ? 
-                        `<button class="btn-agregar" onclick="agregarAlCarrito(${p.id})">AGREGAR</button>` : 
+                        `<button class="btn-agregar" onclick="agregarAlCarrito('${p.nombre}')">AGREGAR</button>` : 
                         `<button class="btn-agotado" disabled>⛔ AGOTADO</button>`
                     }
                 </div>
             </div>
         `;
     }).join('');
+    
+    // Event listeners para detalles
+    document.querySelectorAll('.btn-detalles').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const nombre = btn.dataset.nombre;
+            const nombreId = nombre.replace(/[^a-zA-Z0-9]/g, '_');
+            const detalles = document.getElementById(`detalles-${nombreId}`);
+            const icon = btn.querySelector('i');
+            const texto = btn.querySelector('.btn-detalles-texto');
+            
+            detalles.classList.toggle('oculto');
+            if (detalles.classList.contains('oculto')) {
+                icon.style.transform = 'rotate(0deg)';
+                texto.textContent = 'VER DETALLES';
+            } else {
+                icon.style.transform = 'rotate(180deg)';
+                texto.textContent = 'OCULTAR DETALLES';
+            }
+        });
+    });
 }
 
-// ===== FUNCIONES DEL CARRITO =====
-function agregarAlCarrito(id) {
-    const producto = productos.find(p => p.id === id);
+// ===== FUNCIONES DEL CARRITO (con nombre como identificador) =====
+function agregarAlCarrito(nombre) {
+    const producto = productosData.productos.find(p => p.nombre === nombre);
     if (!producto || !producto.disponible) return;
     
-    const existente = carrito.find(item => item.id === id);
+    const existente = carrito.find(item => item.nombre === nombre);
     
     if (existente) {
         existente.cantidad++;
     } else {
         carrito.push({
-            id: producto.id,
             nombre: producto.nombre,
             precio: producto.precio,
             cantidad: 1,
@@ -165,26 +231,25 @@ function agregarAlCarrito(id) {
     guardarCarrito();
     actualizarContadorCarrito();
     
-    // Feedback visual
     const btn = event.target;
     btn.style.transform = 'scale(0.95)';
     setTimeout(() => btn.style.transform = 'scale(1)', 200);
 }
 
-function eliminarDelCarrito(id) {
-    carrito = carrito.filter(item => item.id !== id);
+function eliminarDelCarrito(nombre) {
+    carrito = carrito.filter(item => item.nombre !== nombre);
     guardarCarrito();
     actualizarContadorCarrito();
     abrirCarrito();
 }
 
-function actualizarCantidad(id, nuevaCantidad) {
+function actualizarCantidad(nombre, nuevaCantidad) {
     if (nuevaCantidad < 1) {
-        eliminarDelCarrito(id);
+        eliminarDelCarrito(nombre);
         return;
     }
     
-    const item = carrito.find(item => item.id === id);
+    const item = carrito.find(item => item.nombre === nombre);
     if (item) {
         item.cantidad = nuevaCantidad;
         guardarCarrito();
@@ -232,10 +297,10 @@ function abrirCarrito() {
                     <p>$${item.precio.toFixed(2)} c/u</p>
                 </div>
                 <div class="carrito-item-cantidad">
-                    <button class="btn-cantidad" onclick="actualizarCantidad(${item.id}, ${item.cantidad - 1})">−</button>
+                    <button class="btn-cantidad" onclick="actualizarCantidad('${item.nombre}', ${item.cantidad - 1})">−</button>
                     <span>${item.cantidad}</span>
-                    <button class="btn-cantidad" onclick="actualizarCantidad(${item.id}, ${item.cantidad + 1})">+</button>
-                    <button class="btn-eliminar" onclick="eliminarDelCarrito(${item.id})"><i class="fas fa-trash"></i></button>
+                    <button class="btn-cantidad" onclick="actualizarCantidad('${item.nombre}', ${item.cantidad + 1})">+</button>
+                    <button class="btn-eliminar" onclick="eliminarDelCarrito('${item.nombre}')"><i class="fas fa-trash"></i></button>
                 </div>
             </div>
         `).join('');
@@ -291,12 +356,11 @@ function guardarRegistro(e) {
     enviarPedidoWhatsApp();
 }
 
-// ===== ENVÍO A WHATSAPP (SIMPLE) =====
+// ===== ENVÍO A WHATSAPP =====
 function enviarPedidoWhatsApp() {
     const { total } = calcularTotales();
     const numPedido = generarNumeroPedido();
     
-    // Crear mensaje
     let mensaje = `*${TIENDA_NOMBRE} - NUEVO PEDIDO*%0A%0A`;
     mensaje += `*Cliente:* ${usuario.nombre}%0A`;
     mensaje += `*Teléfono:* ${usuario.telefono}%0A`;
@@ -309,15 +373,12 @@ function enviarPedidoWhatsApp() {
     
     mensaje += `%0A*TOTAL: $${total.toFixed(2)}*`;
     
-    // Abrir WhatsApp con el número configurado
     window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${mensaje}`, '_blank');
     
-    // Mostrar confirmación al usuario
     numeroPedido.textContent = `#${numPedido}`;
     totalConfirmacion.textContent = `Total: $${total.toFixed(2)}`;
     confirmacionModal.classList.add('active');
     
-    // Vaciar carrito
     carrito = [];
     guardarCarrito();
     actualizarContadorCarrito();
@@ -328,7 +389,7 @@ function generarNumeroPedido() {
     return `LUX-${f.getFullYear()}${String(f.getMonth()+1).padStart(2,'0')}${String(f.getDate()).padStart(2,'0')}-${Math.floor(Math.random()*1000).toString().padStart(3,'0')}`;
 }
 
-// Hacer funciones globales
+// Exponer funciones
 window.agregarAlCarrito = agregarAlCarrito;
 window.eliminarDelCarrito = eliminarDelCarrito;
 window.actualizarCantidad = actualizarCantidad;
