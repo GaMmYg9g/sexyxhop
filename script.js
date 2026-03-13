@@ -56,9 +56,8 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 });
 
-// ===== CATEGORÍAS DINÁMICAS (de todas las categorías de todos los productos) =====
+// ===== CATEGORÍAS DINÁMICAS =====
 function cargarCategorias() {
-    // Extraer TODAS las categorías de todos los productos (array de arrays)
     const todasCategorias = productosData.productos.flatMap(p => p.categorias);
     const categoriasUnicas = [...new Set(todasCategorias)].sort();
     
@@ -79,9 +78,23 @@ function cargarCategorias() {
     });
 }
 
+// ===== ORDEN ALFANUMÉRICO (números primero) =====
+function ordenAlfanumerico(a, b) {
+    const nombreA = a.nombre.toLowerCase();
+    const nombreB = b.nombre.toLowerCase();
+    
+    const esNumeroA = /^\d/.test(nombreA);
+    const esNumeroB = /^\d/.test(nombreB);
+    
+    if (esNumeroA && !esNumeroB) return -1;
+    if (!esNumeroA && esNumeroB) return 1;
+    return nombreA.localeCompare(nombreB);
+}
+
 // ===== FUNCIONES DE PRODUCTOS =====
 function cargarProductos() {
-    renderizarProductos(filtrarProductosArray());
+    const filtrados = filtrarProductosArray();
+    renderizarProductos(filtrados);
 }
 
 function filtrarProductosArray() {
@@ -89,12 +102,12 @@ function filtrarProductosArray() {
     
     if (filtroBusqueda) {
         filtrados = filtrados.filter(p => 
-            p.nombre.toLowerCase().includes(filtroBusqueda.toLowerCase())
+            p.nombre.toLowerCase().includes(filtroBusqueda.toLowerCase()) ||
+            p.descripcion.toLowerCase().includes(filtroBusqueda.toLowerCase())
         );
     }
     
     if (filtroCategoria !== 'todos') {
-        // Filtra si el producto tiene la categoría seleccionada
         filtrados = filtrados.filter(p => p.categorias.includes(filtroCategoria));
     }
     
@@ -106,7 +119,6 @@ function filtrarProductos() {
     renderizarProductos(filtrarProductosArray());
 }
 
-// ===== DETECTAR SI ES NUEVO (menos de 24h) =====
 function esNuevo(fechaStr) {
     if (!fechaStr) return false;
     const fechaProducto = new Date(fechaStr);
@@ -119,6 +131,9 @@ function esNuevo(fechaStr) {
 function renderizarProductos(array) {
     if (!productosContainer) return;
     
+    // Aplicar orden alfanumérico
+    array.sort(ordenAlfanumerico);
+    
     if (array.length === 0) {
         productosContainer.innerHTML = '<div style="grid-column:1/-1; text-align:center; padding:4rem; color:#888;">No se encontraron productos</div>';
         return;
@@ -130,8 +145,7 @@ function renderizarProductos(array) {
         const estadoTexto = disponible ? 'DISPONIBLE' : 'AGOTADO';
         const nuevo = esNuevo(p.fechaAgregado);
         
-        // Generar detalles
-        const propiedadesFijas = ['nombre', 'precio', 'imagen', 'categorias', 'disponible', 'fechaAgregado', 'oferta'];
+        const propiedadesFijas = ['nombre', 'descripcion', 'precio', 'imagen', 'categorias', 'disponible', 'fechaAgregado', 'oferta'];
         const detallesArray = [];
         for (const [key, value] of Object.entries(p)) {
             if (!propiedadesFijas.includes(key) && value) {
@@ -153,8 +167,6 @@ function renderizarProductos(array) {
             <div class="producto-card" data-nombre="${p.nombre}">
                 <div class="producto-imagen-wrapper">
                     <img src="${p.imagen}" alt="${p.nombre}" class="producto-imagen" onerror="this.src='${IMAGEN_DEFAULT}'">
-                    
-                    <!-- BADGES NOTIFICACIÓN (NEW / OFF) -->
                     <div class="producto-badges">
                         ${nuevo ? '<span class="badge badge-new">NEW</span>' : ''}
                         ${p.oferta ? '<span class="badge badge-off">OFF</span>' : ''}
@@ -163,6 +175,7 @@ function renderizarProductos(array) {
                 
                 <div class="producto-info">
                     <h3 class="producto-nombre">${p.nombre}</h3>
+                    <p class="producto-descripcion">${p.descripcion}</p>
                     
                     <button class="btn-detalles" data-nombre="${p.nombre}">
                         <span class="btn-detalles-texto">VER DETALLES</span>
@@ -188,7 +201,6 @@ function renderizarProductos(array) {
         `;
     }).join('');
     
-    // Event listeners para detalles
     document.querySelectorAll('.btn-detalles').forEach(btn => {
         btn.addEventListener('click', (e) => {
             e.stopPropagation();
@@ -210,7 +222,7 @@ function renderizarProductos(array) {
     });
 }
 
-// ===== FUNCIONES DEL CARRITO (con nombre como identificador) =====
+// ===== FUNCIONES DEL CARRITO =====
 function agregarAlCarrito(nombre) {
     const producto = productosData.productos.find(p => p.nombre === nombre);
     if (!producto || !producto.disponible) return;
@@ -281,6 +293,31 @@ function calcularTotales() {
     return { subtotal, total: subtotal };
 }
 
+// ===== FUNCIÓN VER PRODUCTO DESDE CARRITO =====
+function verProducto(nombre) {
+    cerrarCarritoModal();
+    
+    const producto = productosData.productos.find(p => p.nombre === nombre);
+    if (!producto) return;
+    
+    const tarjeta = document.querySelector(`.producto-card[data-nombre="${nombre}"]`);
+    if (tarjeta) {
+        tarjeta.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        
+        tarjeta.style.transition = 'box-shadow 0.3s';
+        tarjeta.style.boxShadow = '0 0 0 3px var(--dorado)';
+        setTimeout(() => {
+            tarjeta.style.boxShadow = '';
+        }, 1500);
+        
+        const btnDetalles = tarjeta.querySelector('.btn-detalles');
+        const detalles = tarjeta.querySelector('.producto-especificaciones');
+        if (btnDetalles && detalles && detalles.classList.contains('oculto')) {
+            btnDetalles.click();
+        }
+    }
+}
+
 // ===== MODALES =====
 function abrirCarrito() {
     if (carrito.length === 0) {
@@ -290,20 +327,28 @@ function abrirCarrito() {
     } else {
         const { subtotal, total } = calcularTotales();
         
-        carritoItems.innerHTML = carrito.map(item => `
-            <div class="carrito-item">
-                <div class="carrito-item-info">
-                    <h4>${item.nombre}</h4>
-                    <p>$${item.precio.toFixed(2)} c/u</p>
+        carritoItems.innerHTML = carrito.map(item => {
+            const producto = productosData.productos.find(p => p.nombre === item.nombre);
+            const imagenSrc = producto ? producto.imagen : item.imagen || IMAGEN_DEFAULT;
+            
+            return `
+                <div class="carrito-item">
+                    <div class="carrito-item-imagen">
+                        <img src="${imagenSrc}" alt="${item.nombre}" onerror="this.src='${IMAGEN_DEFAULT}'">
+                    </div>
+                    <div class="carrito-item-info">
+                        <h4 class="carrito-item-nombre" onclick="verProducto('${item.nombre}')">${item.nombre}</h4>
+                        <p>$${item.precio.toFixed(2)} c/u</p>
+                    </div>
+                    <div class="carrito-item-cantidad">
+                        <button class="btn-cantidad" onclick="actualizarCantidad('${item.nombre}', ${item.cantidad - 1})">−</button>
+                        <span>${item.cantidad}</span>
+                        <button class="btn-cantidad" onclick="actualizarCantidad('${item.nombre}', ${item.cantidad + 1})">+</button>
+                        <button class="btn-eliminar" onclick="eliminarDelCarrito('${item.nombre}')"><i class="fas fa-trash"></i></button>
+                    </div>
                 </div>
-                <div class="carrito-item-cantidad">
-                    <button class="btn-cantidad" onclick="actualizarCantidad('${item.nombre}', ${item.cantidad - 1})">−</button>
-                    <span>${item.cantidad}</span>
-                    <button class="btn-cantidad" onclick="actualizarCantidad('${item.nombre}', ${item.cantidad + 1})">+</button>
-                    <button class="btn-eliminar" onclick="eliminarDelCarrito('${item.nombre}')"><i class="fas fa-trash"></i></button>
-                </div>
-            </div>
-        `).join('');
+            `;
+        }).join('');
         
         subtotalCarrito.textContent = `$${subtotal.toFixed(2)}`;
         totalCarrito.textContent = `$${total.toFixed(2)}`;
@@ -389,8 +434,9 @@ function generarNumeroPedido() {
     return `LUX-${f.getFullYear()}${String(f.getMonth()+1).padStart(2,'0')}${String(f.getDate()).padStart(2,'0')}-${Math.floor(Math.random()*1000).toString().padStart(3,'0')}`;
 }
 
-// Exponer funciones
+// Exponer funciones globales
 window.agregarAlCarrito = agregarAlCarrito;
 window.eliminarDelCarrito = eliminarDelCarrito;
 window.actualizarCantidad = actualizarCantidad;
 window.vaciarCarrito = vaciarCarrito;
+window.verProducto = verProducto;
