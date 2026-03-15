@@ -5,7 +5,7 @@ const productosData = {
             precio: 45,
             imagen: "imagen/arnes.jpg",
             categorias: ["ropa", "accesorios", "arnés"],
-            disponible: true,
+            disponible: false,
             material: "Silicona",
             dimensiones: "17.5 cm y 12.5 cm",
             diámetro: "2.2 cm y 3.5 cm",
