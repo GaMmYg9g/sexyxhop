@@ -21,13 +21,19 @@
     <header>
         <div class="header-container">
             <div class="logo-wrapper">
-                <h1 class="logo">LUJURIA<span class="logo-dorado">.</span></h1>
+                <h1 class="logo">LUJURIA SEX SHOP<span class="logo-dorado">.</span></h1>
                 <span class="tagline">ELEGANCIA Y DESEO</span>
             </div>
-            <nav>
+            <nav class="nav-right">
+                <button class="perfil-btn" id="verPerfil">
+                    <i class="fas fa-user"></i>
+                </button>
                 <button class="carrito-btn" id="verCarrito">
                     <i class="fas fa-shopping-bag"></i>
                     <span id="contadorCarrito" class="contador">0</span>
+                </button>
+                <button class="acerca-btn" id="verAcerca">
+                    <i class="fas fa-info-circle"></i>
                 </button>
             </nav>
         </div>
@@ -52,42 +58,101 @@
         </section>
     </main>
 
-    <!-- MODAL CARRITO -->
-    <div id="carritoModal" class="modal">
-        <div class="modal-contenido">
+    <!-- MODAL ACERCA DE NOSOTROS -->
+    <div id="acercaModal" class="modal">
+        <div class="modal-contenido modal-small">
             <div class="modal-header">
-                <h2><i class="fas fa-shopping-bag"></i> TU CARRITO</h2>
-                <button class="cerrar-modal" id="cerrarModal">&times;</button>
+                <h2><i class="fas fa-info-circle"></i> ACERCA DE NOSOTROS</h2>
+                <button class="cerrar-modal" id="cerrarAcercaModal">&times;</button>
             </div>
-            <div class="modal-body" id="carritoItems"></div>
-            <div class="modal-footer">
-                <div class="resumen-carrito">
-                    <div class="subtotal">
-                        <span>SUBTOTAL</span>
-                        <span id="subtotalCarrito">$0</span>
-                    </div>
-                    <div class="envio">
-                        <span>ENVÍO</span>
-                        <span class="gratis">GRATIS</span>
-                    </div>
-                    <div class="total-carrito">
-                        <span>TOTAL</span>
-                        <span id="totalCarrito">$0</span>
-                    </div>
+            <div class="modal-body acerca-body">
+                <p class="acerca-descripcion">Somos Lujuria Sex Shop, tu tienda de confianza para productos de bienestar íntimo. Discreción y calidad garantizada.</p>
+                
+                <!-- Teléfonos (copiables) -->
+                <div class="contacto-seccion">
+                    <h3><i class="fas fa-phone-alt"></i> Teléfonos</h3>
+                    <ul class="contacto-lista">
+                        <li><i class="fas fa-phone"></i> <span class="telefono-copiable" onclick="copiarTexto('+53 5123 4567')">+53 5123 4567</span></li>
+                        <li><i class="fas fa-whatsapp"></i> <span class="telefono-copiable" onclick="copiarTexto('+53 5987 6543')">+53 5987 6543</span></li>
+                        <li><i class="fas fa-telegram"></i> <span class="telefono-copiable" onclick="copiarTexto('+53 5777 8899')">+53 5777 8899</span></li>
+                    </ul>
                 </div>
-                <div class="footer-buttons">
-                    <button class="btn-vaciar" id="vaciarCarrito">
-                        <i class="fas fa-trash"></i> VACIAR
-                    </button>
-                    <button class="btn-pedido" id="realizarPedido">
-                        REALIZAR PEDIDO <i class="fas fa-arrow-right"></i>
-                    </button>
+
+                <!-- WhatsApp (enlaces invisibles) -->
+                <div class="contacto-seccion">
+                    <h3><i class="fab fa-whatsapp"></i> WhatsApp</h3>
+                    <ul class="contacto-lista">
+                        <li>
+                            <i class="fab fa-whatsapp"></i>
+                            <a href="https://wa.me/5351234567" target="_blank" class="enlace-invisible">Toca Para Unirte a Nuestra Tienda en Whatsapp</a>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Telegram (enlaces invisibles) -->
+                <div class="contacto-seccion">
+                    <h3><i class="fab fa-telegram-plane"></i> Telegram</h3>
+                    <ul class="contacto-lista">
+                        <li>
+                            <i class="fab fa-telegram"></i>
+                            <a href="https://t.me/lujuriasexshop" target="_blank" class="enlace-invisible">Toca Para Unirte a Nuestra Tienda en Telegram</a>
+                        </li>
+                    </ul>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- MODAL REGISTRO -->
+    <!-- MODAL CARRITO (estilo Shein) -->
+    <div id="carritoModal" class="modal carrito-modal">
+        <div class="modal-contenido carrito-contenido">
+            <div class="modal-header">
+                <h2><i class="fas fa-shopping-bag"></i> MI CARRITO</h2>
+                <button class="cerrar-modal" id="cerrarModal">&times;</button>
+            </div>
+            <div class="modal-body carrito-body" id="carritoItems">
+                <!-- Los productos se generan dinámicamente -->
+            </div>
+            <div class="carrito-footer-flotante">
+                <button class="btn-comprar" id="btnComprarCarrito">COMPRAR</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL RESUMEN DE COMPRA -->
+    <div id="resumenCompraModal" class="modal resumen-modal">
+        <div class="modal-contenido resumen-contenido">
+            <div class="modal-header">
+                <h2><i class="fas fa-receipt"></i> RESUMEN DE COMPRA</h2>
+                <button class="cerrar-modal" id="cerrarResumenModal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="resumen-productos" id="resumenProductos">
+                    <!-- Miniaturas en scroll horizontal con precio -->
+                </div>
+                <div class="resumen-detalles">
+                    <div class="resumen-fila">
+                        <span>Subtotal</span>
+                        <span id="resumenSubtotal">$0</span>
+                    </div>
+                    <div class="resumen-fila">
+                        <span>Envío</span>
+                        <span class="gratis">GRATIS</span>
+                    </div>
+                    <div class="resumen-fila total">
+                        <span>TOTAL</span>
+                        <span id="resumenTotal">$0</span>
+                    </div>
+                </div>
+            </div>
+            <div class="resumen-footer">
+                <button class="btn-cancelar" id="cancelarCompra">CANCELAR</button>
+                <button class="btn-ok" id="confirmarCompra">CONFIRMAR</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL REGISTRO (con dirección completa y # de casa) -->
     <div id="registroModal" class="modal">
         <div class="modal-contenido modal-small">
             <div class="modal-header">
@@ -95,7 +160,7 @@
                 <button class="cerrar-modal" id="cerrarRegistroModal">&times;</button>
             </div>
             <div class="modal-body">
-                <p class="modal-descripcion">Necesitamos estos datos para procesar tu pedido.</p>
+                <p class="modal-descripcion">Completa tus datos para procesar el pedido.</p>
                 <form id="formularioRegistro">
                     <div class="form-group">
                         <label for="regNombre">Nombre completo</label>
@@ -105,6 +170,30 @@
                         <label for="regTelefono">Teléfono</label>
                         <input type="tel" id="regTelefono" required placeholder="Ej: 612345678">
                     </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="regProvincia">Provincia</label>
+                            <input type="text" id="regProvincia" required placeholder="Ej: La Habana">
+                        </div>
+                        <div class="form-group">
+                            <label for="regMunicipio">Municipio</label>
+                            <input type="text" id="regMunicipio" required placeholder="Ej: Plaza">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="regZona">Zona/Reparto</label>
+                            <input type="text" id="regZona" required placeholder="Ej: Vedado">
+                        </div>
+                        <div class="form-group">
+                            <label for="regDireccion">Calle</label>
+                            <input type="text" id="regDireccion" required placeholder="Ej: Calle 23">
+                        </div>
+                        <div class="form-group">
+                            <label for="regNumero"># de casa</label>
+                            <input type="text" id="regNumero" required placeholder="Ej: 123">
+                        </div>
+                    </div>
                     <button type="submit" class="btn-confirmar">
                         GUARDAR Y CONTINUAR <i class="fas fa-check"></i>
                     </button>
@@ -113,7 +202,82 @@
         </div>
     </div>
 
-    <!-- MODAL CONFIRMACIÓN -->
+    <!-- MODAL PERFIL (con dirección completa y # de casa, editable) -->
+    <div id="perfilModal" class="modal">
+        <div class="modal-contenido modal-small">
+            <div class="modal-header">
+                <h2><i class="fas fa-user-edit"></i> MI PERFIL</h2>
+                <button class="cerrar-modal" id="cerrarPerfilModal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="formularioPerfil">
+                    <div class="form-group">
+                        <label for="perfilNombre">Nombre completo</label>
+                        <input type="text" id="perfilNombre" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="perfilTelefono">Teléfono</label>
+                        <input type="tel" id="perfilTelefono" required>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="perfilProvincia">Provincia</label>
+                            <input type="text" id="perfilProvincia" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="perfilMunicipio">Municipio</label>
+                            <input type="text" id="perfilMunicipio" required>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="perfilZona">Zona/Reparto</label>
+                            <input type="text" id="perfilZona" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="perfilDireccion">Calle</label>
+                            <input type="text" id="perfilDireccion" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="perfilNumero"># de casa</label>
+                            <input type="text" id="perfilNumero" required>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn-confirmar">
+                        GUARDAR CAMBIOS <i class="fas fa-check"></i>
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL REVISIÓN DE DATOS (estilo Shein, con # de casa) -->
+    <div id="revisionDatosModal" class="modal">
+        <div class="modal-contenido modal-small">
+            <div class="modal-header">
+                <h2><i class="fas fa-check-circle"></i> CONFIRMAR DATOS</h2>
+                <button class="cerrar-modal" id="cerrarRevisionModal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p class="modal-descripcion">Verifica que tus datos sean correctos.</p>
+                <div class="revision-datos">
+                    <p><strong>Nombre:</strong> <span id="revNombre"></span></p>
+                    <p><strong>Teléfono:</strong> <span id="revTelefono"></span></p>
+                    <p><strong>Provincia:</strong> <span id="revProvincia"></span></p>
+                    <p><strong>Municipio:</strong> <span id="revMunicipio"></span></p>
+                    <p><strong>Zona/Reparto:</strong> <span id="revZona"></span></p>
+                    <p><strong>Calle:</strong> <span id="revDireccion"></span></p>
+                    <p><strong># de casa:</strong> <span id="revNumero"></span></p>
+                </div>
+                <div class="revision-acciones">
+                    <button class="btn-cancelar" id="editarDatosBtn">EDITAR</button>
+                    <button class="btn-ok" id="confirmarDatosBtn">CONFIRMAR</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL CONFIRMACIÓN DE PEDIDO -->
     <div id="confirmacionModal" class="modal">
         <div class="modal-contenido modal-small modal-exito">
             <div class="modal-header exito-header">
@@ -130,6 +294,35 @@
                     SEGUIR COMPRANDO <i class="fas fa-arrow-right"></i>
                 </button>
             </div>
+        </div>
+    </div>
+
+    <!-- MODAL DE CONFIRMACIÓN DE ACCIONES -->
+    <div id="confirmacionAccionModal" class="modal confirmacion-modal">
+        <div class="modal-contenido modal-small">
+            <div class="modal-header">
+                <h2><i class="fas fa-question-circle"></i> CONFIRMAR</h2>
+                <button class="cerrar-modal" id="cerrarConfirmacionAccion">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p id="confirmacionMensaje" class="confirmacion-mensaje">¿Estás seguro?</p>
+            </div>
+            <div class="modal-footer confirmacion-footer">
+                <button class="btn-cancelar" id="cancelarConfirmacion">CANCELAR</button>
+                <button class="btn-ok" id="okConfirmacion">OK</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MINI NOTIFICACIÓN -->
+    <div id="notificacionMini" class="mini-notificacion">
+        <div class="mini-contenido">
+            <div class="mini-header">
+                <i class="fas fa-info-circle"></i>
+                <span>Lujuria Sex Shop</span>
+            </div>
+            <div class="mini-mensaje" id="miniMensaje">Mensaje</div>
+            <button class="mini-btn" id="cerrarMiniNotif">OK</button>
         </div>
     </div>
 
