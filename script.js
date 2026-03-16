@@ -1,9 +1,9 @@
 // ============================================
-// LUXURIA SHOP - LÓGICA PRINCIPAL
+// DANFERSEXSHOP - LÓGICA PRINCIPAL
 // ============================================
 
 const WHATSAPP_NUMBER = "5355902776";
-const TIENDA_NOMBRE = "LUJURIA SEX SHOP";
+const TIENDA_NOMBRE = "DANFER SEXSHOP";
 
 // Mapa de colores
 const colorMap = {
@@ -805,7 +805,7 @@ function generarYEnviarMensaje() {
     
     const { total } = calcularTotales();
     const numPedido = generarNumeroPedido();
-    const tiendaUrl = "https://gammyg9g.github.io/lujuriasexshop";
+    const tiendaUrl = "https://gammyg9g.github.io/danfersexshop";
     
     // Construir dirección completa
     const direccionCompleta = [
@@ -826,10 +826,12 @@ function generarYEnviarMensaje() {
         let linea = `• ${item.nombre}`;
         if (item.color) linea += ` (${item.color})`;
         linea += ` x${item.cantidad} = $${(item.precio * item.cantidad).toFixed(2)}`;
-        mensajeTexto += linea + '\n';
+        mensajeTexto += linea + '\n\n';
     });
     
-    mensajeTexto += `\n*TOTAL: $${total.toFixed(2)}*\n\n`;
+    mensajeTexto += `\n*TOTAL: $${total.toFixed(2)} USD*`;
+    mensajeTexto += `\n*----------------------------------------------------------*`;
+    mensajeTexto += `\n*DOMICILIO: $1 200 CUP*\n\n`;
     mensajeTexto += `*Dirección:* ${direccionCompleta}\n\n`;
     mensajeTexto += `Tienda: ${tiendaUrl}`;
     
@@ -861,7 +863,7 @@ function generarYEnviarMensaje() {
 
 function generarNumeroPedido() {
     const f = new Date();
-    return `LUX-${f.getFullYear()}${String(f.getMonth()+1).padStart(2,'0')}${String(f.getDate()).padStart(2,'0')}-${Math.floor(Math.random()*1000).toString().padStart(3,'0')}`;
+    return `DFSS-${f.getFullYear()}${String(f.getMonth()+1).padStart(2,'0')}${String(f.getDate()).padStart(2,'0')}-${Math.floor(Math.random()*1000).toString().padStart(3,'0')}`;
 }
 
 // ===== COPIAR TEXTO AL PORTAPAPELES =====
