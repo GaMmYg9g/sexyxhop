@@ -88,7 +88,7 @@ header {
 }
 
 .logo-icon {
-    height: 2rem;
+    height: 3rem;
     width: auto;
     border-radius: 50%;
     object-fit: cover;
@@ -1658,4 +1658,10 @@ footer {
     margin-left: 0.5rem;
     vertical-align: middle;
     text-transform: uppercase;
+}
+
+@media (max-width: 768px) {
+    .logo-icon {
+        height: 2.4rem; /* Antes 1.6rem */
+    }
 }
