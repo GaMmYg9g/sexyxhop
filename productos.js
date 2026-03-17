@@ -18,7 +18,7 @@ const productosData = {
             etiquetaOferta: ""
         },
         {
-            nombre: "Vibrador Succionador de Clitorís y Estimulador de Punto G (Control por APP)",
+            nombre: "Vibrador Succionador de Clitorís y Estimulador de Punto G",
             precio: 45,
             imagen: "imagen/vibrador.jpg",
             categorias: ["vibradores"],
