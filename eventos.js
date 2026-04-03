@@ -6,7 +6,7 @@
 const eventos = [
   {
     id: 'rebaja_global_abril',
-    titulo: '🔥 DISPONIBLE HASTA EL 15 DE ABRIL 🔥',
+    titulo: '🔥DISPONIBLE HASTA EL 15 DE ABRIL🔥',
     mensaje: '¡10% de descuento en TODOS los productos!',
     descuento: 10, // porcentaje
     fechaInicio: '2026-04-01',
